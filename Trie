@@ -1,0 +1,152 @@
+//Trie implementation 
+
+struct Node{
+    Node* child[26];
+    bool flag;
+    
+    Node(){
+        flag = false;
+        for(int i = 0 ; i < 26 ; i++) child[i] = NULL;
+    }
+};
+
+class Trie {
+    Node * root;
+public:
+    Trie() {
+        root = new Node();
+    }
+    
+    void insert(string word) {
+        Node* curr = root;
+        int k = 0;
+        for(auto it: word){
+            k = it - 'a';
+            if(!curr->child[k]){
+                curr->child[k] = new Node();
+            }
+            curr = curr->child[k];
+        }
+        curr->flag = true;
+    }
+    
+    bool search(string word) {
+        Node* curr = root;
+        int k = 0;
+        for(auto it: word){
+            k = it - 'a';
+            if(!curr->child[k]) return false;
+            curr = curr->child[k];
+        }
+        return curr->flag;
+    }
+    
+    bool startsWith(string prefix) {
+        Node* curr = root;
+        int k = 0;
+        for(auto it: prefix){
+            k = it - 'a';
+            if(!curr->child[k]) return false;
+            curr = curr->child[k];
+        }
+        return true;
+    }
+};
+
+
+
+// count prefix and delete
+
+#include <bits/stdc++.h> 
+
+struct Node{
+    Node* child[26];
+    int cntPrefix = 0;
+    int cntEndWith = 0;
+
+    bool containsKey(char ch){
+        return (child[ch- 'a'] != NULL);
+    }
+
+    void put(char ch, Node* node){
+        child[ch- 'a'] = node;
+    }
+
+    Node* get(char ch){
+        return child[ch - 'a'];
+    }
+
+    void increasePrefix(){
+        cntPrefix++;
+    }
+
+    void increaseEnd(){
+        cntEndWith++;
+    }
+
+    void reducePrefix(){
+        cntPrefix--;
+    }
+
+    void deleteEnd(){
+        cntEndWith--;
+    }
+
+    int getEnd(){
+        return cntEndWith;
+    }
+
+    int getPrefix(){
+        return cntPrefix;
+    }
+};
+
+class Trie{
+Node* root;
+
+    public:
+
+    Trie(){
+        root = new Node();
+    }
+
+    void insert(string &word){
+        Node* curr = root;
+        for(auto it: word){
+            if(!curr->containsKey(it)) curr->put(it, new Node());
+            curr = curr->get(it);
+            curr->increasePrefix();
+        }
+        curr->increaseEnd();
+    }
+
+    int countWordsEqualTo(string &word){
+        Node* curr = root;
+        for(auto it: word){
+            if(!curr->containsKey(it)) return 0;
+            else curr = curr->get(it);
+        }
+        return curr->getEnd();
+    }
+
+    int countWordsStartingWith(string &word){
+        Node* curr = root;
+        for(auto it: word){
+            if(!curr->containsKey(it)) return 0;
+            else curr = curr->get(it);
+        }
+        return curr->getPrefix();
+    }
+
+    void erase(string &word){
+        Node* curr = root;
+        for(auto it: word){
+            if(curr->containsKey(it)){
+                curr = curr->get(it);
+                curr->reducePrefix();
+            }
+            else return;
+        }
+        return curr->deleteEnd();
+    }
+};
